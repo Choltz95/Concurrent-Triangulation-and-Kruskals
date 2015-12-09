@@ -1,0 +1,5 @@
+#!/bin/sh
+rm *.class
+javac MST.java
+echo "--------"
+java MST
