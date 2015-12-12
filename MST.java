@@ -427,7 +427,7 @@ class Surface {
             return -1;      // so I get an error if I use it
         }
 
-        // utility routine for constructor
+        // utility routine for Constructor
         //
         private void initializeEnd(point p, edge e, int end, int dir) {
             if (e == null) {
@@ -960,19 +960,15 @@ class Surface {
 
         // run
         public void run(){
-/// main thread has not reached helper thread
-            int m = getSize(); /// numEdges
-            // System.out.println("SortedSet size " + m);
-            int leftI = 0; /// each partition starting index
+            int m = getSize(); // numEdges
+            int leftI = 0; // each partition starting index
             if(m%thread_number == 0){
                 leftI = i*m/thread_number;
             }
             else{
                 leftI = i*(m-m%thread_number)/thread_number;
             }
-            
-            // System.out.println("What is start index of each partition: " + leftI);
-            
+                        
             while( eIndex < leftI && isFinished ){
                 // System.out.println("eIndex in run method for each partition " + eIndex);     
                 for(edge e: edges){             
@@ -982,15 +978,10 @@ class Surface {
                         
                         if(ep1 == ep2){
                             e.notCycleEdge = false;
-                            // System.out.println("Thread is working");
-                            // how to draw 
-                            // hashEdgeToNotCycle.put(e,  new Boolean(Boolean.valueOf(false)));
-                            // System.out.println("This is not a cycle edge");
                         }
                     }
                 }
             }
-            // System.out.println("Finished helper.");
         }
     }
 
@@ -1000,17 +991,17 @@ class Surface {
         int numTrees = n;
         int numEdges = getSize(); // number of edges in triangulation
         
-        int partitions = threads_cnt + 1; /// pay attention change back 
+        int partitions = threads_cnt + 1; // pay attention change back 
         
-        int e_index = 0; /// it is each partition starting index, but it is locally different from eIndex which controls when to exit helper thread
+        int e_index = 0; // it is each partition starting index, but it is locally different from eIndex which controls when to exit helper thread
         boolean fromFlag = true;
         boolean toFlag = false;
-        int p = 0; /// each partition of edges starting index
+        int p = 0; // each partition of edges starting index
         int thread_id = 0;
         int interval = 0;
         
         MSTHelperThread[] MSTThread = new MSTHelperThread[partitions-1]; // partitions actually is # of helper threads
-        /// but actually the working threads are threads_cnt-1, last thread is null     
+        // but actually the working threads are threads_cnt-1, last thread is null     
         if(numEdges%partitions == 0){
             interval = numEdges/partitions;
         }
