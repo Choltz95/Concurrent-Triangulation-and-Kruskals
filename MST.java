@@ -105,7 +105,7 @@ public class MST {
     //
     private Surface build(RootPaneContainer pane, int an) {
         final Coordinator c = new Coordinator();
-        Surface s = new Surface(n, sd, c);
+        Surface s = new Surface(n, sd, c, numThreads); // numThreads added as argument
         Animation t = null;
         if (an == SHOW_RESULT || an == FULL_ANIMATION) {
             t = new Animation(s);
@@ -265,6 +265,13 @@ class Surface {
         // each other.  See point.hashCode and point.equals below.
     private final SortedSet<edge> edges;
         // Used for rendering.  Ordering supports the KruskalSolve stage.
+
+            /// newly added threads_cnt 
+    private static int threads_cnt = 0;
+    
+    /// newly added hashtable
+    private Hashtable<edge, Boolean>hashEdgeToNotCycle = new Hashtable<edge, Boolean>();
+
     private long sd = 0;
     private final Random prn;     // pseudo-random number generator
 
@@ -409,6 +416,7 @@ class Surface {
         public final edge[][] neighbors = new edge[2][2];
             // indexed first by edge end and then by rotational direction
         private boolean isMSTedge = false;
+        public boolean notCycleEdge = true; //check cycle edge
         public final double length;
 
         // Return index of point p within edge
@@ -741,7 +749,6 @@ class Surface {
         }
         // Now [l..i] is the left partition and [j..r] is the right.
         // Either may be empty.
-
         if (i < l) {
             // empty left half
             triangulate(j, r, low1, high1, mid, high0, 1-parity);
@@ -772,7 +779,6 @@ class Surface {
             // axis.  This class is basically a hack to get around the
             // lack of nested subroutines in Java.  We invoke its run
             // method twice below.
-            //
             class rotateClass {
                 void run(side s, int dir) {
                     // rotate around s.p to find edges adjacent to Y axis
@@ -808,7 +814,6 @@ class Surface {
             // Find endpoint of bottom edge of seam, by moving around border
             // as far as possible without going around a corner.  This, too,
             // is basically a nested subroutine.
-            //
             class findBottomClass {
                 boolean move(side s, int dir, point o) {
                     boolean progress = false;
@@ -846,11 +851,8 @@ class Surface {
             // Work up the seam creating new edges and deleting old
             // edges where necessary.  Note that {left,right}.{b,bi,bp}
             // are no longer needed.
-
             while (true) {
-
                 // Find candidate endpoint.  Yet another nested subroutine.
-                //
                 class findCandidateClass {
                     point call(side s, int dir, edge base, point o)
                             throws Coordinator.KilledException {
@@ -919,11 +921,16 @@ class Surface {
         }
     }
 
+    /// newly added getSize(); edges is sortedSet
+    public int getSize(){
+        return edges.size();
+    }
+
     // This is the actual MST calculation.
     // It relies on the fact that set "edges" is sorted by length, so
     // enumeration occurs shortest-to-longest.
     //
-    public void KruskalSolve()
+/*    public void KruskalSolve()
         throws Coordinator.KilledException {
         int numTrees = n;
         for (edge e : edges) {
@@ -937,6 +944,128 @@ class Surface {
             }
         }
     }
+*/
+// MST helper thread
+    class MSTHelperThread extends Thread {
+        private SortedSet<edge> edges;
+        private int i;
+        private int thread_number;
+        
+        // constructor
+        public MSTHelperThread(SortedSet<edge> edges, int i, int thread_number){
+            this.edges = edges;
+            this.i = i;
+            this.thread_number = thread_number;
+        }
+
+        // run
+        public void run(){
+/// main thread has not reached helper thread
+            int m = getSize(); /// numEdges
+            // System.out.println("SortedSet size " + m);
+            int leftI = 0; /// each partition starting index
+            if(m%thread_number == 0){
+                leftI = i*m/thread_number;
+            }
+            else{
+                leftI = i*(m-m%thread_number)/thread_number;
+            }
+            
+            // System.out.println("What is start index of each partition: " + leftI);
+            
+            while( eIndex < leftI && isFinished ){
+                // System.out.println("eIndex in run method for each partition " + eIndex);     
+                for(edge e: edges){             
+                    if(e.notCycleEdge){
+                        point ep1 = e.points[0].subtree();
+                        point ep2 = e.points[1].subtree();
+                        
+                        if(ep1 == ep2){
+                            e.notCycleEdge = false;
+                            // System.out.println("Thread is working");
+                            // how to draw 
+                            // hashEdgeToNotCycle.put(e,  new Boolean(Boolean.valueOf(false)));
+                            // System.out.println("This is not a cycle edge");
+                        }
+                    }
+                }
+            }
+            // System.out.println("Finished helper.");
+        }
+    }
+
+    private static volatile int eIndex = 0;
+    private static volatile boolean isFinished = true;
+    public void KruskalSolve() throws Coordinator.KilledException {
+        int numTrees = n;
+        int numEdges = getSize(); // number of edges in triangulation
+        
+        int partitions = threads_cnt + 1; /// pay attention change back 
+        
+        int e_index = 0; /// it is each partition starting index, but it is locally different from eIndex which controls when to exit helper thread
+        boolean fromFlag = true;
+        boolean toFlag = false;
+        int p = 0; /// each partition of edges starting index
+        int thread_id = 0;
+        int interval = 0;
+        
+        MSTHelperThread[] MSTThread = new MSTHelperThread[partitions-1]; // partitions actually is # of helper threads
+        /// but actually the working threads are threads_cnt-1, last thread is null     
+        if(numEdges%partitions == 0){
+            interval = numEdges/partitions;
+        }
+        else{
+            interval = (numEdges - numEdges%partitions)/partitions;
+        }
+        
+        edge fromElement = null;
+        edge toElement = null;
+        
+        for (edge e : edges) {
+            
+            if(e_index%interval == 0 && fromFlag == true){
+                fromElement = e;                
+                toFlag = true;
+                fromFlag = false;
+                p = e_index;
+            }       
+            
+            if(e_index == p+interval && toFlag == true){
+                toElement = e;
+                fromFlag = true;
+                toFlag = false;
+                
+                SortedSet<edge> h_edges = edges.subSet(fromElement, toElement);
+            
+                MSTThread[thread_id] = new MSTHelperThread(h_edges, thread_id, partitions);
+                MSTThread[thread_id].start();
+                System.out.println("Thread id " + thread_id);
+                thread_id++;
+                e_index--;
+            }
+            
+            e_index++;
+        }
+        int ifN = 0; // in order to test if enter if() clause
+        /// make eIndex is global, not passe by thread's constructor
+        isFinished = true;
+        for (edge e : edges) {
+            if(e.notCycleEdge){
+                point st1 = e.points[0].subtree();
+                point st2 = e.points[1].subtree();
+                if (st1 != st2) {
+                    // This edge joins two previously separate subtrees.
+                    st1.merge(st2);
+                    e.addToMST();
+                    if (--numTrees == 1){
+                        isFinished = false;
+                        break;                      
+                    }
+                }
+            }
+            eIndex++;
+        }
+    }
 
     // This is a wrapper for the root call to triangulate().
     //
@@ -946,7 +1075,8 @@ class Surface {
 
     // Constructor
     //
-    public Surface(int N, long SD, Coordinator C) {
+    public Surface(int N, long SD, Coordinator C, int threads_cnt) {
+        this.threads_cnt = threads_cnt;
         n = N;
         sd = SD;
         coord = C;
