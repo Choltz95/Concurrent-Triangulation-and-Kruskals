@@ -22,7 +22,7 @@ def main():
         for j in range (0,5):
             seed = random.randrange(-_inf,_inf)
             print(j)
-            call("java MST -a 0 -t " + str(i)  +" -n 500000 -s "+ str(seed), shell=True, stdout = f)
+            call("java MST -a 0 -t " + str(i)  +" -n 1000000 -s "+ str(seed), shell=True, stdout = f)
     f.close()
 '''
     regexp = re.compile(r'.*\+.*')
