@@ -1,4 +1,0 @@
- === CSC 254 A6: Concurrency Timing Analysis ===
-Chester Holtz - 28264729 - choltz2@u.rochester.edu
-Lee Murphy - 28250920 - lmurp14@u.rochester.edu
-
