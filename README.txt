@@ -2,7 +2,7 @@
 Chester Holtz - 28264729 - choltz2@u.rochester.edu
 Lee Murphy - 28250920 - lmurp14@u.rochester.edu
 
-In this assignment we were required to implement a generic ordered set abstraction given some base code for an integer set. 
+In this assignment we were required to implement parallelizations of existing sequential programs written in Java. 
 
 == Source Files ==
 README.txt - This file
@@ -12,25 +12,29 @@ Coordinator.java
 run - File to build and run the test program
 
 == Description ==
-This assignent tasked us with implementing a generic ordered set library in C++. This oset template library contains functionaility for various set operations for elements of arbitrary type. We also implement an iterator to iterate over elements in the set and allow for a comparator to be taken as ordered set constructor parameter.
-
-== Approach ==
-This project successfully implements all required components of the assignment. Ordered sets are implemented as linked lists of nodes. Nodes have a value and point to the next element in the ordered set. Iterator operations support prefix and postfix iteration as well as equality checking (==/!=). 
-
--- Set operations --
-Linear time generic set union, difference, and intersection are implemented with a two iterator approach using a while loop. For the union of sets A and B, we initialize iterators i and j for both sets and increment them according to the comparison of values at both iterator positions. If the value of both nodes as position i and j are equal, we increment i and j. If the value of j is greater than that of i we increment i. Otherwise, we increment j and insert the node at position j into the i+1 position of A. Additionally, for union, we also have to deal with the case where A is empty and B contains some elemnts. In this case, since the head of A is a garbage node, we simply return B. For set difference, we can implement the same algorithm, but alter the definition such that if the value of nodes at i (A) and j (B) are equal, we delete the ith node of A and return A after iteration. For intersection, we define a temporary list to add nodes common to both A and B and return the temporary list once we have completed iteration, clearing list A.
-
---Templating--
-To implement our library as a template, we follow the process of defining generic classes and associated methods + parameters, naming our generic type T.
-
---Non standard comparators--
-We provide functionality for non standard comparators by allowing them to be passed as constructor arguments when sets are initialized. 
+The given program constructs a Delaunay Triangulation from a set of randomized points using Dwyers Algorithm. From the triangulation, we compute the MST of the graph using Kruskal's Algorithm. We implemented parallelized versions of the both of these algorithms and tested the speedup. The timing analysis done for the program is in writeup.txt.
 
 == Instructions ==
-From the command line, type make and run ./oset to run the sample code to test the generic set library.
+From the command line, type javac MST.java and then Java MST with valid command line arguments:
 
-== Example Output ==
-Given the sample code predefined in oset.cc, we get the output:
+−a  [0123]
+    Animation mode. 
+
+    0   (default) =>
+        print run time to standard output, but nothing else 
+    1 =>
+        print list of created, destroyed, and selected (tree) edges, plus run time 
+    2 =>
+        create a GUI that shows the triangulation and MST, and allow the user to re-run with additional sets of points 
+    3 =>
+        animate the algorithm on the screen as it runs.  
+
+−n  num
+    Number of points.  Default = 50.  More than a couple hundred becomes too dense to look good when animated.  You’ll need to run big numbers (more than 10,000) to get multi-second execution times.  
+−s  num
+    Seed for pseudorandom number generator.  Every value of the seed produces a different set of points.  
+−t  num
+    Number of threads (max) that should be running at any given time.  This argument is currently unused; it’s it’s here to support your parallelization efforts.  
 
 == Analysis ==
-See writeup.pdf
+See writeup.txt

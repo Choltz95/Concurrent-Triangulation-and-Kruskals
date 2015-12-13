@@ -1,0 +1,110 @@
+500000 points, seed 1776061357
+elapsed time: 5.229 + 0.378 = 5.607 seconds
+500000 points, seed -1096469325
+elapsed time: 5.024 + 0.374 = 5.398 seconds
+500000 points, seed 1812684575
+elapsed time: 5.285 + 0.371 = 5.656 seconds
+500000 points, seed -25075873
+elapsed time: 5.178 + 0.380 = 5.558 seconds
+500000 points, seed -88222847
+elapsed time: 5.239 + 0.378 = 5.617 seconds
+500000 points, seed 252910181
+elapsed time: 4.804 + 0.391 = 5.195 seconds
+500000 points, seed -1013994371
+elapsed time: 4.558 + 0.395 = 4.953 seconds
+500000 points, seed 2062464682
+elapsed time: 4.782 + 0.380 = 5.162 seconds
+500000 points, seed 1307609019
+elapsed time: 4.490 + 0.389 = 4.879 seconds
+500000 points, seed 152564750
+elapsed time: 4.620 + 0.385 = 5.005 seconds
+500000 points, seed -1335175932
+elapsed time: 4.376 + 0.418 = 4.794 seconds
+500000 points, seed 780859861
+elapsed time: 4.065 + 0.369 = 4.434 seconds
+500000 points, seed 674907459
+elapsed time: 4.062 + 0.369 = 4.431 seconds
+500000 points, seed 1252224930
+elapsed time: 4.177 + 0.368 = 4.545 seconds
+500000 points, seed 588791881
+elapsed time: 4.272 + 0.369 = 4.641 seconds
+500000 points, seed -1194464044
+elapsed time: 3.757 + 0.430 = 4.187 seconds
+500000 points, seed -1126068921
+elapsed time: 4.510 + 0.426 = 4.936 seconds
+500000 points, seed 974592971
+elapsed time: 4.482 + 0.403 = 4.885 seconds
+500000 points, seed 1847274696
+elapsed time: 4.360 + 0.436 = 4.796 seconds
+500000 points, seed -1739174460
+elapsed time: 4.400 + 0.429 = 4.829 seconds
+500000 points, seed 684815517
+elapsed time: 3.850 + 0.405 = 4.255 seconds
+500000 points, seed -1625449046
+elapsed time: 3.855 + 0.410 = 4.265 seconds
+500000 points, seed 277049221
+elapsed time: 4.111 + 0.428 = 4.539 seconds
+500000 points, seed 1776038411
+elapsed time: 3.254 + 0.393 = 3.647 seconds
+500000 points, seed -1433265749
+elapsed time: 4.316 + 0.431 = 4.747 seconds
+500000 points, seed 800755451
+elapsed time: 4.512 + 0.462 = 4.974 seconds
+500000 points, seed -293371767
+elapsed time: 4.210 + 0.483 = 4.693 seconds
+500000 points, seed 389297849
+elapsed time: 4.329 + 0.435 = 4.764 seconds
+500000 points, seed -1852874465
+elapsed time: 4.239 + 0.481 = 4.720 seconds
+500000 points, seed 627384691
+elapsed time: 4.281 + 0.478 = 4.759 seconds
+500000 points, seed 107112063
+elapsed time: 3.994 + 0.484 = 4.478 seconds
+500000 points, seed 941960607
+elapsed time: 4.471 + 0.546 = 5.017 seconds
+500000 points, seed -1252478397
+elapsed time: 4.061 + 0.512 = 4.573 seconds
+500000 points, seed 1295992899
+elapsed time: 4.243 + 0.486 = 4.729 seconds
+500000 points, seed 2133148736
+elapsed time: 4.208 + 0.678 = 4.886 seconds
+500000 points, seed 1678548172
+elapsed time: 4.281 + 0.699 = 4.980 seconds
+500000 points, seed -1270967862
+elapsed time: 3.495 + 0.856 = 4.351 seconds
+500000 points, seed -1744391225
+elapsed time: 4.612 + 0.700 = 5.312 seconds
+500000 points, seed -614733366
+elapsed time: 3.930 + 0.665 = 4.595 seconds
+500000 points, seed -2082354460
+elapsed time: 3.968 + 0.704 = 4.672 seconds
+500000 points, seed 441667785
+elapsed time: 4.134 + 1.084 = 5.218 seconds
+500000 points, seed 1553847372
+elapsed time: 3.616 + 0.959 = 4.575 seconds
+500000 points, seed -1951885196
+elapsed time: 3.772 + 0.987 = 4.759 seconds
+500000 points, seed 394054812
+elapsed time: 4.470 + 0.856 = 5.326 seconds
+500000 points, seed -1979269085
+elapsed time: 4.134 + 0.853 = 4.987 seconds
+500000 points, seed 867382636
+elapsed time: 4.006 + 1.304 = 5.310 seconds
+500000 points, seed -15784484
+elapsed time: 3.308 + 1.117 = 4.425 seconds
+500000 points, seed 138104505
+elapsed time: 3.990 + 1.228 = 5.218 seconds
+500000 points, seed -1027721894
+elapsed time: 4.120 + 1.261 = 5.381 seconds
+500000 points, seed 756456033
+elapsed time: 3.874 + 1.410 = 5.284 seconds
+500000 points, seed -526861746
+elapsed time: 4.130 + 1.886 = 6.016 seconds
+500000 points, seed 1758725778
+elapsed time: 4.104 + 1.854 = 5.958 seconds
+500000 points, seed 1143185991
+elapsed time: 3.684 + 1.822 = 5.506 seconds
+500000 points, seed 560772077
+elapsed time: 4.051 + 2.002 = 6.053 seconds
+500000 points, seed -1157031796
+elapsed time: 4.719 + 1.993 = 6.712 seconds

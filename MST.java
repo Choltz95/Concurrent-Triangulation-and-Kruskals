@@ -32,6 +32,7 @@ public class MST {
     private static int n = 50;              // default number of points
     private static long sd = 0;             // default random number seed
     private static int numThreads = 1;      // default
+    public int threads_running = 0;
 
     private static final int TIMING_ONLY    = 0;
     private static final int PRINT_EVENTS   = 1;
@@ -156,6 +157,7 @@ public class MST {
             System.out.printf("%d points, seed %d\n", n, sd);
         }
         Surface s = me.build(f, animate);
+        s.numThreads = numThreads;
         if (f != null) {
             f.pack();
             f.setVisible(true);
@@ -243,6 +245,8 @@ class Surface {
     private static final int ydim = 1;
     private static final int ccw = 0;
     private static final int cw = 1;
+    public int threads_running=0;
+    public static int numThreads;
 
     private int minx;   // smallest x value among all points
     private int miny;   // smallest y value among all points
@@ -630,6 +634,34 @@ class Surface {
         }
     }
 
+    class TriHelperThread extends Thread {
+        private final int l;
+        private final int r;
+        private final int low0;
+        private final int high0;
+        private final int low1;
+        private final int high1;
+        private final int parity;
+
+        public void run() {
+            try {
+                triangulate(l, r, low0, high0, low1, high1, parity);
+            } catch(Coordinator.KilledException e) { }
+        }
+
+        // Constructor
+        public TriHelperThread(int l, int r, int low0, int high0, int low1, int high1, int parity) {
+            this.l = l;
+            this.r = r;
+            this.low0 = low0;
+            this.low1 = low1;
+            this.high0 = high0;
+            this.high1 = high1;
+            this.parity = parity;
+            threads_running++;
+        }
+    }
+
     // Divide points[l..r] into two partitions.  Solve recursively, then
     // stitch back together.  Dim0 values range from [low0..high0].
     // Dim1 values range from [low1..high1].  We partition based on dim0.
@@ -757,8 +789,38 @@ class Surface {
             triangulate(l, i, low1, high1, low0, mid, 1-parity);
         } else {
             // divide and conquer
-            triangulate(l, i, low1, high1, low0, mid, 1-parity);
-            triangulate(j, r, low1, high1, mid, high0, 1-parity);
+            // triangulate(l, i, low1, high1, low0, mid, 1-parity);
+            // triangulate(j, r, low1, high1, mid, high0, 1-parity);
+            TriHelperThread lt = null;
+            // TriHelperThread rt = null;
+
+            if(threads_running < numThreads){
+                lt = new TriHelperThread(l, i, low1, high1, low0, mid, 1-parity);
+                //rt = new TriHelperThread(j, r, low1, high1, mid, high0, 1-parity);
+                lt.start();
+                triangulate(j, r, low1, high1, mid, high0, 1-parity);
+                //rt.start();
+            }
+            else{
+                triangulate(l, i, low1, high1, low0, mid, 1-parity);
+                triangulate(j, r, low1, high1, mid, high0, 1-parity);
+            }
+
+            if(lt!=null){
+                try{
+                    lt.join();
+                    threads_running--;
+                }
+                catch (InterruptedException e){
+                }
+            }
+            // if(rt!=null){
+            //     try{
+            //         rt.join();
+            //     }
+            //     catch (Exception e ){
+            //     }
+            // }
 
             // prepare to stitch meshes together up the middle:
             class side {
@@ -921,7 +983,7 @@ class Surface {
         }
     }
 
-    /// newly added getSize(); edges is sortedSet
+    // returns the size of the edge set computed by the delauny triangulation subroutine
     public int getSize(){
         return edges.size();
     }
@@ -985,8 +1047,8 @@ class Surface {
         }
     }
 
-    private static volatile int eIndex = 0;
-    private static volatile boolean isFinished = true;
+    private static volatile int eIndex = 0; // keep track of partitions
+    private static volatile boolean isFinished = true; // make sure while loop exits when finished
     public void KruskalSolve() throws Coordinator.KilledException {
         int numTrees = n;
         int numEdges = getSize(); // number of edges in triangulation
@@ -1001,7 +1063,7 @@ class Surface {
         int interval = 0;
         
         MSTHelperThread[] MSTThread = new MSTHelperThread[partitions-1]; // partitions actually is # of helper threads
-        // but actually the working threads are threads_cnt-1, last thread is null     
+        // working threads are threads_cnt-1, last thread is null     
         if(numEdges%partitions == 0){
             interval = numEdges/partitions;
         }
@@ -1012,15 +1074,13 @@ class Surface {
         edge fromElement = null;
         edge toElement = null;
         
-        for (edge e : edges) {
-            
+        for (edge e : edges) {   
             if(e_index%interval == 0 && fromFlag == true){
                 fromElement = e;                
                 toFlag = true;
                 fromFlag = false;
                 p = e_index;
             }       
-            
             if(e_index == p+interval && toFlag == true){
                 toElement = e;
                 fromFlag = true;
@@ -1030,15 +1090,12 @@ class Surface {
             
                 MSTThread[thread_id] = new MSTHelperThread(h_edges, thread_id, partitions);
                 MSTThread[thread_id].start();
-                System.out.println("Thread id " + thread_id);
                 thread_id++;
                 e_index--;
             }
             
             e_index++;
         }
-        int ifN = 0; // in order to test if enter if() clause
-        /// make eIndex is global, not passe by thread's constructor
         isFinished = true;
         for (edge e : edges) {
             if(e.notCycleEdge){
@@ -1061,6 +1118,7 @@ class Surface {
     // This is a wrapper for the root call to triangulate().
     //
     public void DwyerSolve() throws Coordinator.KilledException {
+        int threads_running = 0;
         triangulate(0, n-1, minx, maxx, miny, maxy, 0);
     }
 
